@@ -32,6 +32,16 @@ LESSONS = [
 ]
 
 SETUP = """from pathlib import Path
+import sys
+import os
+# Make the local src-layout package importable in VS Code/Jupyter without installation.
+project_root = Path.cwd().resolve().parent if Path.cwd().name == "notebooks" else Path.cwd().resolve()
+sys.path.insert(0, str(project_root / "src"))
+# Spark 3.5 is compatible with the installed Java 17 runtime; Java 25 is not.
+java17_home = Path("/opt/miniconda3/pkgs/openjdk-17.0.18-h258754b_0/lib/jvm")
+if java17_home.exists():
+    os.environ["JAVA_HOME"] = str(java17_home)
+    os.environ["PATH"] = f"{{java17_home / 'bin'}}:{{os.environ['PATH']}}"
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 from pyspark_learning.spark_session import create_spark_session
